@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>treeData.txt</file>
+    </qresource>
+</RCC>
