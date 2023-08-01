@@ -8,7 +8,7 @@ Main menu:
 
 Insert example:
 
-![Insert example](./img/Edit%20example.jpg)
+![Insert example](./img/Insert%20example.jpg)
 
 Edit example:
 
