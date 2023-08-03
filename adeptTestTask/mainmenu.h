@@ -26,7 +26,7 @@ public:
     void exe();
 
 private:
-    int safe_cin();
+    static int safe_cin();
     void addNewNodeMenu();
     void editNodeMenu();
     void deleteNodeMenu();

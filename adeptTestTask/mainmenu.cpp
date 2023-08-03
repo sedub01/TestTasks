@@ -47,7 +47,7 @@ void MainMenu::exe()
 
 int MainMenu::safe_cin()
 {
-    int chooce;
+    int chooce = -1;
     char str[MAXLEN];
 
     scanf("%s", str);

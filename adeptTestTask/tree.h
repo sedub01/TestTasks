@@ -3,31 +3,33 @@
 
 #include "itree.h"
 #include <iostream>
+#include <memory>
 
 using std::cout;
 
 class Tree : public ITree
 {
-    Node* root {nullptr};
+    std::shared_ptr<Node> root {nullptr};
     int nodeCount = 0;
 
 public:
-    explicit Tree(QObject *parent = nullptr);
+    explicit Tree() {}
+    ~Tree() = default;
 
     // ITree interface
 public:
     void addNode(const QString &name, int parentId) override;
-    void saveTree(const QString &filename) override;
+    void saveTree(const QString &filename) const override;
     void loadTree(const QString &filename) override;
-    void printTree() override;
-    Node* findChild(int id) override;
+    void printTree() const override;
+    std::shared_ptr<Node> findChild(int id) const override;
     bool changeName(int id, char *newName) override;
     bool deleteNode(int id) override;
 
 private:
-    void serializeNode(const Node *node, QJsonObject &json);
-    Node *deserializeNode(const QJsonObject &json);
-    void printNode(const Node *node, int indent);
+    void serializeNode(const Node *node, QJsonObject &json) const;
+    std::shared_ptr<Node> deserializeNode(const QJsonObject &json);
+    void printNode(const Node *node, int indent) const;
 };
 
 #endif // TREE_H

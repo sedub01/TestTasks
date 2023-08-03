@@ -2,36 +2,32 @@
 #define NODE_H
 
 #include <QObject>
+#include <memory>
 
-class Node : public QObject
+class Node
 {
-    Q_OBJECT
-
 public:
     int id;
     QString name;
     int parentId;
-    QList<Node*> children;
+    QList<std::shared_ptr<Node>> children;
 
-    explicit Node(int id, const QString& name, int parentId, QObject *parent):
-        QObject(parent), id(id), name(name), parentId(parentId) {}
+    explicit Node(int id, const QString& name, int parentId):
+        id(id), name(name), parentId(parentId) {}
+    ~Node() {}
 
-    ~Node(){
-        qDeleteAll(children);
-    }
-
-    void addChild(Node* child) {
+    void addChild(std::shared_ptr<Node> child) {
         children.append(child);
     }
 
-    Node* findChild(int id){
-        for (const auto child: qAsConst(children)){
+    std::shared_ptr<Node> findChild(int id) const{
+        for (const auto &child: qAsConst(children)){
             if (child->id == id){
                 return child;
             }
         }
 
-        for (const auto child: qAsConst(children)){
+        for (const auto &child: qAsConst(children)){
             const auto neededNode = child->findChild(id);
             if (neededNode){
                 return neededNode;
@@ -41,9 +37,9 @@ public:
         return nullptr;
     }
 
-    void deleteChild(Node* node){
+    void deleteChild(std::shared_ptr<Node> node){
         if (node){
-            for (const auto child: qAsConst(node->children)){
+            for (const auto &child: qAsConst(node->children)){
                 deleteChild(child);
             }
             children.removeOne(node);

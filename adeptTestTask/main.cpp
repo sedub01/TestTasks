@@ -3,12 +3,12 @@
 
 #include <QCoreApplication>
 #include <iostream>
+#include <memory>
 
 int main()
 {
-    ITree* tree = new Tree();
-    MainMenu menu(tree);
+    std::shared_ptr<ITree> tree = std::make_shared<Tree>();
+    MainMenu menu(tree.get());
     menu.exe();
-    delete tree;
     return 0;
 }

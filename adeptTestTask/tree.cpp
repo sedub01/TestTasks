@@ -8,15 +8,9 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
-Tree::Tree(QObject *parent)
-    : ITree(parent)
-{
-
-}
-
 void Tree::addNode(const QString &name, int parentId)
 {
-    Node* newNode = new Node(nodeCount++, name, parentId, this);
+    auto newNode = std::make_shared<Node>(nodeCount++, name, parentId);
     if (!root){
         newNode->id = newNode->parentId = 0;
         root = newNode;
@@ -33,12 +27,12 @@ void Tree::addNode(const QString &name, int parentId)
     }
 }
 
-void Tree::saveTree(const QString &filename)
+void Tree::saveTree(const QString &filename) const
 {
     QFile file(filename);
     if (file.open(QIODevice::WriteOnly)) {
         QJsonObject json;
-        serializeNode(root, json);
+        serializeNode(root.get(), json);
         QJsonDocument doc(json);
         file.write(doc.toJson());
         file.close();
@@ -65,12 +59,12 @@ void Tree::loadTree(const QString &filename)
     }
 }
 
-void Tree::printTree()
+void Tree::printTree() const
 {
-    printNode(root, 0);
+    printNode(root.get(), 0);
 }
 
-Node *Tree::findChild(int id)
+std::shared_ptr<Node> Tree::findChild(int id) const
 {
     if (root->id == id)
         return root;
@@ -100,7 +94,7 @@ bool Tree::deleteNode(int id)
     return false;
 }
 
-void Tree::serializeNode(const Node *node, QJsonObject &json)
+void Tree::serializeNode(const Node *node, QJsonObject &json) const
 {
     if (!node)
         return;
@@ -109,20 +103,20 @@ void Tree::serializeNode(const Node *node, QJsonObject &json)
     json["name"] = node->name;
     json["parent"] = node->parentId;
     QJsonArray childrenJson;
-    for (const auto child : node->children) {
+    for (const auto &child : node->children) {
         QJsonObject childJson;
-        serializeNode(child, childJson);
+        serializeNode(child.get(), childJson);
         childrenJson.append(childJson);
     }
     json["children"] = childrenJson;
 }
 
-Node *Tree::deserializeNode(const QJsonObject &json)
+std::shared_ptr<Node> Tree::deserializeNode(const QJsonObject &json)
 {
     int id = json["id"].toInt();
     QString name = json["name"].toString();
     int parentId = json["parentId"].toInt();
-    const auto node = new Node(id, name, parentId, this);
+    auto node = std::make_shared<Node>(id, name, parentId);
     QJsonArray childrenJson = json["children"].toArray();
     for (const QJsonValue& childJson : qAsConst(childrenJson)) {
         QJsonObject childObj = childJson.toObject();
@@ -133,7 +127,7 @@ Node *Tree::deserializeNode(const QJsonObject &json)
     return node;
 }
 
-void Tree::printNode(const Node *node, int indent)
+void Tree::printNode(const Node *node, int indent) const
 {
     if (!node)
         return;
@@ -141,7 +135,7 @@ void Tree::printNode(const Node *node, int indent)
     QString indentation(indent, ' ');
     cout << indentation.toStdString() << "[" << node->id << ", " <<
             node->parentId << "] " << node->name.toStdString() << "\n";
-    for (const auto child: qAsConst(node->children)){
-        printNode(child, indent+2);
+    for (const auto &child: qAsConst(node->children)){
+        printNode(child.get(), indent+2);
     }
 }
