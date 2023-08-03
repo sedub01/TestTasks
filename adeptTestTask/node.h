@@ -17,10 +17,7 @@ public:
         QObject(parent), id(id), name(name), parentId(parentId) {}
 
     ~Node(){
-        for (auto child: qAsConst(children)){
-            delete child;
-            child = nullptr;
-        }
+        qDeleteAll(children);
     }
 
     void addChild(Node* child) {
@@ -49,7 +46,7 @@ public:
             for (const auto child: qAsConst(node->children)){
                 deleteChild(child);
             }
-            delete node;
+            children.removeOne(node);
         }
     }
 };
