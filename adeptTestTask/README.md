@@ -1,6 +1,6 @@
 # AdeptTestTask
 
-Almost everything has been done, except for the implementation of the database and debugging the deletion of the node
+Almost everything has been done, except for the implementation of the database
 
 Main menu:
 
